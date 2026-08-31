@@ -1,55 +1,37 @@
-# Sistema de Controle Financeiro Pessoal
+# Módulo 3 — Strategy
 
-Projeto desenvolvido em Python utilizando Programação Orientada a Objetos.
+No Módulo 3 foram criadas estratégias para rendimento, juros e correção monetária.
 
-O sistema possui as classes:
+## Estratégias de rendimento, juros e correção monetária
 
-- Conta
-- Categoria
-- Lancamento
-- Fechamento
-- Conciliacao
-- Extrato
+Foi escolhida a utilização de interfaces separadas para rendimento, juros e correção monetária.
 
-Também possui testes automatizados utilizando pytest.
+A decisão foi tomada porque, apesar de os três problemas utilizarem o padrão Strategy, eles representam conceitos diferentes dentro do sistema financeiro.
 
-## Fechamento
+O rendimento representa o crescimento de um valor aplicado.
 
-O `Fechamento` recebe uma lista de lançamentos e cria uma cópia dessa lista.
+Os juros representam um cálculo baseado em capital, taxa e tempo.
 
-A decisão foi utilizar cópia porque o fechamento representa um registro consolidado de um período. Depois que o fechamento é criado, alterações na lista original não devem modificar o fechamento.
+A correção monetária representa a atualização de um valor por um índice de correção, como IPCA ou INPC.
 
-Além disso, a propriedade `lancamentos` também retorna uma cópia da lista. Dessa forma, código externo não consegue alterar diretamente a coleção interna do objeto.
+Por isso, foi utilizada uma interface própria para cada conceito:
 
-## Conciliacao
+- `EstrategiaRendimento`
+- `EstrategiaJuros`
+- `EstrategiaCorrecaoMonetaria`
 
-A `Conciliacao` foi criada como uma classe própria.
+Essa decisão é semelhante ao que aconteceu no tutorial com `EstrategiaDesconto` e `EstrategiaFrete`. Mesmo que os dois utilizem Strategy, eles representam conceitos diferentes.
 
-A decisão foi separar essa responsabilidade porque conciliação representa uma operação específica: verificar se o total de débitos é igual ao total de créditos.
+## Onde a estratégia é guardada
 
-Manter essa responsabilidade em uma classe própria evita colocar responsabilidades demais dentro de `Fechamento`.
+A estratégia é passada como parâmetro no momento do cálculo.
 
-Quando os valores não conferem, o método `conciliar()` lança um `ValueError` com uma mensagem informando os valores encontrados.
+Essa decisão segue a ideia apresentada no Capítulo 9.
 
-## Período sem lançamentos
+A estratégia representa a forma de realizar determinado cálculo naquele momento. Assim, não é necessário guardar uma estratégia como atributo permanente de uma entidade.
 
-Um `Fechamento` pode ser criado sem lançamentos.
+Por exemplo:
 
-Nesse caso:
-
-- quantidade de lançamentos = 0
-- total de débitos = 0
-- total de créditos = 0
-- saldo = 0
-
-Essa decisão permite representar um período em que não houve movimentação financeira.
-
-## Conciliação sem lançamentos
-
-Uma conciliação sem débitos e sem créditos é considerada conciliada, pois os dois lados possuem valor zero.
-
-Portanto:
-
-```text
-débitos = 0
-créditos = 0
+```python
+estrategia = RendimentoPoupanca(10)
+resultado = estrategia.calcular(1000.0)
